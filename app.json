@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "android-tasks",
+    "slug": "android-tasks",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "android-tasks"
+}

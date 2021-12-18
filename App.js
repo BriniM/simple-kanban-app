@@ -1,11 +1,38 @@
-// import { StatusBar } from 'expo-status-bar';
-import React, { createContext, useState } from "react";
+import { StatusBar } from 'expo-status-bar';
+import React, { createContext, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { HomeScreen } from "./HomeScreen";
 import { ModTache } from "./ModTache";
+
+import * as DB from "./DB";
+import { AjouterTache } from './AjouterTache';
+
+export const adaptTasksData = (ETATS, tasks) => {
+  let taskTypes = Object.keys(ETATS);
+  let adaptedTasks = [];
+
+  taskTypes.forEach(taskType => {
+    let sectionData = tasks.filter(task => taskType == task["type_tache"]);
+    if (sectionData.length > 0) {
+      adaptedTasks.push({
+        tasksType: ETATS[taskType],
+        data: sectionData.map(task => {
+          return {
+            title: task.title,
+            duree: task.duree,
+            id: task.id,
+          }
+        })
+      })  
+    }
+  })
+
+  return adaptedTasks;
+}
 
 const Stack = createNativeStackNavigator();
 
@@ -15,16 +42,24 @@ export const AppContext = createContext({
 });
 
 export default function App() {
-  let [tasksData, setTasksData] = useState(devTasksData);
+  let [tasksData, setTasksData] = useState({});
+
+  useEffect(() => {
+    DB.getTasks().then(tasks => {
+      setTasksData(adaptTasksData(ETATS, tasks));
+    })
+  }, [])
 
   return (
     <AppContext.Provider value={{ tasksData, setTasksData }}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Taches" component={HomeScreen} />
-          <Stack.Screen name="ModTache" component={ModTache} />
+          <Stack.Screen name="Modifier Tache" component={ModTache} />
+          <Stack.Screen name="Ajouter Tache" component={AjouterTache} />
         </Stack.Navigator>
       </NavigationContainer>
+      <StatusBar style="auto" />
     </AppContext.Provider>
   );
 }
@@ -33,14 +68,6 @@ export const appStyles = StyleSheet.create({
   container: {
     paddingTop: 40,
     backgroundColor: "#F0F1F2",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 500,
-    color: "#5685FF",
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginBottom: 18,
   },
   item: {
     fontSize: 12,

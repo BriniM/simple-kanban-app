@@ -1,8 +1,6 @@
 // import { StatusBar } from 'expo-status-bar';
-import React from "react";
-import {
-  StyleSheet,
-} from "react-native";
+import React, { createContext, useState } from "react";
+import { StyleSheet } from "react-native";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -11,14 +9,23 @@ import { ModTache } from "./ModTache";
 
 const Stack = createNativeStackNavigator();
 
+export const AppContext = createContext({
+  tasksData: [],
+  setTasksData: () => {},
+});
+
 export default function App() {
+  let [tasksData, setTasksData] = useState(devTasksData);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Taches" component={HomeScreen} />
-        <Stack.Screen name="ModTache" component={ModTache} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AppContext.Provider value={{ tasksData, setTasksData }}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Taches" component={HomeScreen} />
+          <Stack.Screen name="ModTache" component={ModTache} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppContext.Provider>
   );
 }
 
@@ -49,7 +56,7 @@ export const appStyles = StyleSheet.create({
     marginBottom: 4,
   },
   input: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderColor: "#F0F1F2",
     marginTop: 12,
     marginBottom: 12,
@@ -59,8 +66,8 @@ export const appStyles = StyleSheet.create({
     paddingLeft: 10,
     paddingBottom: 10,
     fontSize: 10,
-    borderRadius: 5
-  }
+    borderRadius: 5,
+  },
 });
 
 export const ETATS = {
@@ -70,7 +77,7 @@ export const ETATS = {
   3: "Annulé",
 };
 
-export const tasksData = [
+const devTasksData = [
   {
     tasksType: ETATS[0],
     data: [{ id: 1, title: "Task 1", duree: "1h" }],

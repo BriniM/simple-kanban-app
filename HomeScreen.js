@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Text,
   View,
   SectionList,
   SafeAreaView
 } from "react-native";
-import { appStyles, tasksData } from "./App";
+import { AppContext, appStyles } from "./App";
 
 function TaskItem(props) {
   let { Item, Section, Navigation } = props;
@@ -24,13 +24,15 @@ function TaskCategory(props) {
 }
 
 export const HomeScreen = ({ navigation }) => {
+  let { tasksData } = useContext(AppContext);
+
   return (
     <View style={appStyles.container}>
       <Text style={appStyles.title}>Liste des taches</Text>
       <SafeAreaView>
         <SectionList
           sections={tasksData}
-          keyExtractor={(item, index) => item.id}
+          keyExtractor={(item) => item.id}
           renderItem={({ item, section }) => <TaskItem Item={item} Section={section} Navigation={navigation} />}
           renderSectionHeader={({ section: { tasksType } }) => (
             <TaskCategory TasksType={tasksType} />
